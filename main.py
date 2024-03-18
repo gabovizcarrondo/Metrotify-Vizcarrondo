@@ -2,6 +2,7 @@ from server import poblar
 import json
 from perfil import Musico, Escucha
 from musica import Cancion, Album
+import webbrowser
 
 def crear_usuario(usuarios):
     nombre=input("Nombre del usuario: ")
@@ -26,7 +27,8 @@ def crear_cancion():
         "id": "0000",
         "name": name,
         "duration": duration,  
-        "link": link  
+        "link": link,  
+        "streams": 0
     }
     return info
       
@@ -65,13 +67,27 @@ def buscar_album(albums):
         print("No existe el album")
         return
     
-def buscar_cancion(albums):
+def buscar_cancion(albums, logged_id):
     canciones = sum([i.tracklist for i in albums], [])
     name=input("Nombre de la cancion: ")
     try:
-        cancion_buscada=canciones[[i.nombre for i in canciones].index(name)]
-        print (str(cancion_buscada))
-        return
+        album_index = [name in [j.nombre for j in i.tracklist] for i in albums].index(True)
+        canciones_index = [i.nombre for i in albums[album_index].tracklist].index(name)
+        cancion_buscada=albums[album_index].tracklist.pop(canciones_index)
+        while True:
+            x = input("1. Escuchar cancion\n2. Dar like\n3. Salir\n")
+            if x=='1': 
+                cancion_buscada.streams+=1
+                webbrowser.open(cancion_buscada.link)
+                return "Escuchaste la cancion"
+            elif x=='2':
+                cancion_buscada.likes.append(logged_id)
+                cancion_buscada.likes = list(set(cancion_buscada.likes))
+                print("Le diste like a la cancion")
+            elif x=='3':
+                albums[album_index].tracklist.append(cancion_buscada)
+                return
+            else: print ("Opcion no valida")
     except:
         print("No existe la cancion")
         return
@@ -133,7 +149,7 @@ while  True:
         if  x == "1":
             buscar_album(albums)
         if x =="2":
-            buscar_cancion(albums)
+            buscar_cancion(albums, logged_id)
         if x == "3":
             buscar_usuario(usuarios)
         if x=="4":

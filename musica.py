@@ -15,18 +15,21 @@ class Cancion():
         self.nombre = json["name"]
         self.duration = json["duration"]
         self.likes = []
+        self.link = json["link"]
         if "likes" in json: 
             self.likes = json["likes"]
-        self.streams = []
+        self.streams = 0
         if "streams" in json: 
-            self.likes = json["streams"]
+            self.streams = json["streams"]
         
     def as_dict(self):
         info = {
             "id": self.id,
             "name": self.nombre,
             "duration": self.duration,
-            "likes": self.likes
+            "link": self.link,
+            "likes": self.likes,
+            "streams": self.streams
         }
         return info
         
